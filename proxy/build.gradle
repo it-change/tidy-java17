@@ -1,0 +1,65 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+apply plugin: 'java'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {    
+    implementation 'com.google.code.gson:gson:2.10'
+    implementation 'org.springframework:spring-context:6.0.3'
+    implementation 'org.eclipse.persistence:org.eclipse.persistence.moxy:4.0.0'
+    implementation 'org.apache.ws.xmlschema:xmlschema-core:2.3.0'
+    implementation 'org.apache.commons:commons-text:1.10.0'
+    implementation 'com.github.javadev:underscore:1.84'
+    implementation 'org.apache.commons:commons-lang3:3.12.0'
+    implementation 'org.slf4j:slf4j-simple:2.0.6'
+    implementation 'org.apache.logging.log4j:log4j-core:2.19.0'
+    implementation 'org.openjdk.nashorn:nashorn-core:15.4'
+    implementation 'com.algorithmia:algorithmia-client:1.0.16'
+    implementation 'org.codehaus.janino:janino:3.1.8'
+    implementation 'org.codehaus.groovy:groovy-all:3.0.13'
+ //   implementation 'org.python:jython:2.7.3'
+    implementation 'org.apache.commons:commons-jexl3:3.2.1'
+    implementation ('com.helger:ph-schematron:5.6.5') {
+       exclude(group:'com.helger', module:'ph-jaxb-pom')
+    }
+    implementation 'com.sun.xml.bind:jaxb-impl:2.3.3'
+    implementation 'org.apache.commons:commons-collections4:4.4'
+}
+
+jar {
+    manifest {
+        attributes('Main-Class': 'org.apache.openwhisk.runtime.java.action.Proxy')
+    }
+}
+
+task oneJar(type: Jar) {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    manifest.from jar.manifest
+    classifier = 'all'
+    from {
+         configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    } {
+        exclude "META-INF/*.SF"
+        exclude "META-INF/*.DSA"
+        exclude "META-INF/*.RSA"
+    }
+    with jar
+}
